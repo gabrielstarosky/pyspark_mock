@@ -33,11 +33,12 @@ class Column:
     
     def __mul__(self, other):
 
-        def create_column_with_sum(df, other_column : str):
+        def create_column_with_mult(df, other_column : str):
             pd_df_copy = df.pd_df.copy()
             pd_df_copy[other_column] = pd_df_copy[self.column_name] * pd_df_copy[other.column_name]
             return DataFrame(pd_df_copy)
         
+        return Column(f'{self.column_name} - {other.column_name}', create_column_with_mult)
     
     def __truediv__(self, other):
 
