@@ -249,3 +249,22 @@ class TestDataFrame(unittest.TestCase):
         expected_results = [False, True, True, True, True, False, True]
 
         self.assertListEqual(list(df.pd_df.result), expected_results)
+
+    def test_equal_operator(self):
+        observations = [
+            (1, 0),
+            (1, 1),
+            (0, 1),
+            (-2, 0),
+            (-2, -2),
+            (4, 2),
+            (4, 6)
+        ]
+
+        columns = ['n1', 'n2']
+        df = self._createDataFrame(observations, columns)
+        df = df.withColumn('result', F.col('n1') == F.col('n2'))
+
+        expected_results = [False, True, False, False, True, False, False]
+
+        self.assertListEqual(list(df.pd_df.result), expected_results)
