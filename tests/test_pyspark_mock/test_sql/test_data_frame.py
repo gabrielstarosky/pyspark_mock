@@ -84,9 +84,9 @@ class TestDataFrame(unittest.TestCase):
         ]
         columns = ['number']
         df = self._createDataFrame(observations, columns)
-        df = df.withColumn('raiz', F.sqrt('number'))
+        df = df.withColumn('result', F.sqrt('number'))
 
-        self.assertListEqual(list(df.pd_df.raiz), [1.0, 2.0, 3.0, 4.0, 10.0])
+        self.assertListEqual(list(df.pd_df.result), [1.0, 2.0, 3.0, 4.0, 10.0])
 
     def test_abs_function(self):
         
@@ -99,9 +99,9 @@ class TestDataFrame(unittest.TestCase):
         ]
         columns = ['number']
         df = self._createDataFrame(observations, columns)
-        df = df.withColumn('absolute', F.abs('number'))
+        df = df.withColumn('result', F.abs('number'))
 
-        self.assertListEqual(list(df.pd_df.absolute), [1, 2, 95, 16, 10])
+        self.assertListEqual(list(df.pd_df.result), [1, 2, 95, 16, 10])
 
     def _createDataFrame(self, observations, columns):
 
@@ -136,9 +136,9 @@ class TestDataFrame(unittest.TestCase):
         ]
         columns = ['n1', 'n2', 'n3', 'n4']
         df = self._createDataFrame(observations, columns)
-        df = df.withColumn('greatest', F.greatest('n1', 'n2', 'n3', 'n4'))
+        df = df.withColumn('result', F.greatest('n1', 'n2', 'n3', 'n4'))
 
-        self.assertListEqual(list(df.pd_df.greatest), [4, 1, 2, 0])
+        self.assertListEqual(list(df.pd_df.result), [4, 1, 2, 0])
 
     def test_add_operator(self):
 
@@ -153,9 +153,9 @@ class TestDataFrame(unittest.TestCase):
         ]
         columns = ['n1', 'n2']
         df = self._createDataFrame(observations, columns)
-        df = df.withColumn('soma', F.col('n1') + F.col('n2'))
+        df = df.withColumn('result', F.col('n1') + F.col('n2'))
 
-        self.assertListEqual(list(df.pd_df.soma), [2, 4, 0, 6, 0, 1, 1])
+        self.assertListEqual(list(df.pd_df.result), [2, 4, 0, 6, 0, 1, 1])
 
     def test_sub_operator(self):
 
@@ -170,9 +170,9 @@ class TestDataFrame(unittest.TestCase):
         ]
         columns = ['n1', 'n2']
         df = self._createDataFrame(observations, columns)
-        df = df.withColumn('soma', F.col('n1') - F.col('n2'))
+        df = df.withColumn('result', F.col('n1') - F.col('n2'))
 
-        self.assertListEqual(list(df.pd_df.soma), [0, 0, -4, 2, 0, 1, -1])
+        self.assertListEqual(list(df.pd_df.result), [0, 0, -4, 2, 0, 1, -1])
 
     def test_mult_operator(self):
 
@@ -187,9 +187,9 @@ class TestDataFrame(unittest.TestCase):
         ]
         columns = ['n1', 'n2']
         df = self._createDataFrame(observations, columns)
-        df = df.withColumn('soma', F.col('n1') * F.col('n2'))
+        df = df.withColumn('result', F.col('n1') * F.col('n2'))
 
-        self.assertListEqual(list(df.pd_df.soma), [1, 4, -4, 8, 0, 0, 0])
+        self.assertListEqual(list(df.pd_df.result), [1, 4, -4, 8, 0, 0, 0])
 
     def test_div_operator(self):
 
@@ -206,11 +206,11 @@ class TestDataFrame(unittest.TestCase):
         ]
         columns = ['n1', 'n2']
         df = self._createDataFrame(observations, columns)
-        df = df.withColumn('soma', F.col('n1') / F.col('n2'))
+        df = df.withColumn('result', F.col('n1') / F.col('n2'))
 
         expected_results = [2.0, 1.0, 3.0, 0.0, 0.0, -1.0, -2.0, 0.5, -0.5]
 
-        self.assertListEqual(list(df.pd_df.soma), expected_results)
+        self.assertListEqual(list(df.pd_df.result), expected_results)
 
     def test_less_than_operator(self):
         observations = [
@@ -225,8 +225,8 @@ class TestDataFrame(unittest.TestCase):
 
         columns = ['n1', 'n2']
         df = self._createDataFrame(observations, columns)
-        df = df.withColumn('soma', F.col('n1') < F.col('n2'))
+        df = df.withColumn('result', F.col('n1') < F.col('n2'))
 
         expected_results = [False, False, True, True, False, False, True]
 
-        self.assertListEqual(list(df.pd_df.soma), expected_results)
+        self.assertListEqual(list(df.pd_df.result), expected_results)
