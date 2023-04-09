@@ -211,3 +211,22 @@ class TestDataFrame(unittest.TestCase):
         expected_results = [2.0, 1.0, 3.0, 0.0, 0.0, -1.0, -2.0, 0.5, -0.5]
 
         self.assertListEqual(list(df.pd_df.soma), expected_results)
+
+    def test_less_than_operator(self):
+        observations = [
+            (1, 0),
+            (1, 1),
+            (0, 1),
+            (-2, 0),
+            (-2, -2),
+            (4, 2),
+            (4, 6)
+        ]
+
+        columns = ['n1', 'n2']
+        df = self._createDataFrame(observations, columns)
+        df = df.withColumn('soma', F.col('n1') < F.col('n2'))
+
+        expected_results = [False, False, True, True, False, False, True]
+
+        self.assertListEqual(list(df.pd_df.soma), expected_results)

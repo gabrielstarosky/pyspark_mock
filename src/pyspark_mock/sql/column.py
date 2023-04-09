@@ -48,3 +48,12 @@ class Column:
             return DataFrame(pd_df_copy)
         
         return Column(f'{self.column_name} / {other.column_name}', eq_f_in_pandas)
+    
+    def __lt__(self, other):
+
+        def eq_f_in_pandas(df, other_column : str):
+            pd_df_copy = df.pd_df.copy()
+            pd_df_copy[other_column] = pd_df_copy[self.column_name] < pd_df_copy[other.column_name]
+            return DataFrame(pd_df_copy)
+        
+        return Column(f'{self.column_name} < {other.column_name}', eq_f_in_pandas)
