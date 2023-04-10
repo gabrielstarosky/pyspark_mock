@@ -14,6 +14,9 @@ class Column:
     def apply(self, df):
         return self.rule_function(df, self.column_name)
     
+    def str(self):
+        return self.column_name
+    
     def __add__(self, other):
         imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] + pd_df[other.column_name])
         return Column(f'{self.column_name} + {other.column_name}', imp_f_in_df)
