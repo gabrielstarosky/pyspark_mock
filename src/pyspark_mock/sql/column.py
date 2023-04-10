@@ -1,5 +1,6 @@
 
-from pyspark_mock.sql import DataFrame
+
+from ._utils import _f_in_df
 
 class Column:
 
@@ -14,73 +15,33 @@ class Column:
         return self.rule_function(df, self.column_name)
     
     def __add__(self, other):
-
-        def eq_f_in_pandas(df, other_column : str):
-            pd_df_copy = df.pd_df.copy()
-            pd_df_copy[other_column] = pd_df_copy[self.column_name] + pd_df_copy[other.column_name]
-            return DataFrame(pd_df_copy)
-        
-        return Column(f'{self.column_name} + {other.column_name}', eq_f_in_pandas)
+        imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] + pd_df[other.column_name])
+        return Column(f'{self.column_name} + {other.column_name}', imp_f_in_df)
     
     def __sub__(self, other):
-
-        def eq_f_in_pandas(df, other_column : str):
-            pd_df_copy = df.pd_df.copy()
-            pd_df_copy[other_column] = pd_df_copy[self.column_name] - pd_df_copy[other.column_name]
-            return DataFrame(pd_df_copy)
-        
-        return Column(f'{self.column_name} - {other.column_name}', eq_f_in_pandas)
+        imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] - pd_df[other.column_name])
+        return Column(f'{self.column_name} - {other.column_name}', imp_f_in_df)
     
     def __mul__(self, other):
-
-        def eq_f_in_pandas(df, other_column : str):
-            pd_df_copy = df.pd_df.copy()
-            pd_df_copy[other_column] = pd_df_copy[self.column_name] * pd_df_copy[other.column_name]
-            return DataFrame(pd_df_copy)
-        
-        return Column(f'{self.column_name} - {other.column_name}', eq_f_in_pandas)
+        imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] * pd_df[other.column_name])
+        return Column(f'{self.column_name} - {other.column_name}', imp_f_in_df)
     
     def __truediv__(self, other):
-
-        def eq_f_in_pandas(df, other_column : str):
-            pd_df_copy = df.pd_df.copy()
-            pd_df_copy[other_column] = pd_df_copy[self.column_name] / pd_df_copy[other.column_name]
-            return DataFrame(pd_df_copy)
-        
-        return Column(f'{self.column_name} / {other.column_name}', eq_f_in_pandas)
+        imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] / pd_df[other.column_name])
+        return Column(f'{self.column_name} / {other.column_name}', imp_f_in_df)
     
     def __lt__(self, other):
-
-        def eq_f_in_pandas(df, other_column : str):
-            pd_df_copy = df.pd_df.copy()
-            pd_df_copy[other_column] = pd_df_copy[self.column_name] < pd_df_copy[other.column_name]
-            return DataFrame(pd_df_copy)
-        
-        return Column(f'{self.column_name} < {other.column_name}', eq_f_in_pandas)
+        imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] < pd_df[other.column_name])
+        return Column(f'{self.column_name} < {other.column_name}', imp_f_in_df)
     
     def __le__(self, other):
-
-        def eq_f_in_pandas(df, other_column : str):
-            pd_df_copy = df.pd_df.copy()
-            pd_df_copy[other_column] = pd_df_copy[self.column_name] <= pd_df_copy[other.column_name]
-            return DataFrame(pd_df_copy)
-        
-        return Column(f'{self.column_name} <= {other.column_name}', eq_f_in_pandas)
+        imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] <= pd_df[other.column_name])
+        return Column(f'{self.column_name} <= {other.column_name}', imp_f_in_df)
     
     def __eq__(self, other):
-
-        def eq_f_in_pandas(df, other_column : str):
-            pd_df_copy = df.pd_df.copy()
-            pd_df_copy[other_column] = pd_df_copy[self.column_name] == pd_df_copy[other.column_name]
-            return DataFrame(pd_df_copy)
-        
-        return Column(f'{self.column_name} = {other.column_name}', eq_f_in_pandas)
+        imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] == pd_df[other.column_name])
+        return Column(f'{self.column_name} = {other.column_name}', imp_f_in_df)
     
     def __ne__(self, other):
-
-        def eq_f_in_pandas(df, other_column : str):
-            pd_df_copy = df.pd_df.copy()
-            pd_df_copy[other_column] = pd_df_copy[self.column_name] != pd_df_copy[other.column_name]
-            return DataFrame(pd_df_copy)
-        
-        return Column(f'{self.column_name} = {other.column_name}', eq_f_in_pandas)
+        imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] != pd_df[other.column_name])
+        return Column(f'{self.column_name} != {other.column_name}', imp_f_in_df)
