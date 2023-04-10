@@ -22,6 +22,12 @@ def abs(column_name):
 def greatest(*cols):
 
     imp_f_in_df = _f_in_df(lambda pd_df : pd_df[list(cols)].max(axis=1))
-    
+   
     str_list_of_cols = ','.join(cols)
     return Column(f'GREATEST({str_list_of_cols})', imp_f_in_df)
+
+def when(col, value_when_true):
+
+    imp_f_in_df = _f_in_df(lambda pd_df : pd_df[col].apply(lambda x : value_when_true if x else None))
+    return Column(f'WHEN({col})', imp_f_in_df)
+

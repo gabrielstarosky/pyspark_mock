@@ -325,3 +325,6 @@ class TestDataFrame(unittest.TestCase):
         expected_results = [True, True, False, False, True, True, False]
 
         self.assertListEqual(list(df.pd_df.result), expected_results)
+
+    def test_when_otherwise_function(self):
+        self.assertFalse(True) #TODO: testar
