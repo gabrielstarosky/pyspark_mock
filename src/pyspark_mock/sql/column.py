@@ -45,3 +45,7 @@ class Column:
     def __ne__(self, other):
         imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] != pd_df[other.column_name])
         return Column(f'{self.column_name} != {other.column_name}', imp_f_in_df)
+    
+    def __gt__(self, other):
+        imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] > pd_df[other.column_name])
+        return Column(f'{self.column_name} > {other.column_name}', imp_f_in_df)
