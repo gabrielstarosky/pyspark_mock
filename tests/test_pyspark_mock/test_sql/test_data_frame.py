@@ -116,7 +116,50 @@ class TestDataFrame(unittest.TestCase):
         self.assertFalse(True) #TODO: testar
 
     def test_min_function(self):
-        self.assertFalse(True) #TODO: testar
+        observations = [
+            ('A', 'Cat1',1),
+            ('A', 'Cat1',4),
+            ('A', 'Cat2',1),
+            ('A', 'Cat3',6),
+            ('A', 'Cat4',-4),
+            ('B', 'Cat1',0),
+            ('B', 'Cat2',4),
+            ('B', 'Cat3',2),
+            ('B', 'Cat4',4),
+            ('C', 'Cat2',5),
+            ('C', 'Cat2',2),
+            ('D', 'Cat3',4),
+            ('D', 'Cat3',5),
+            ('D', 'Cat4',5),
+        ]
+        columns = ['agg1', 'agg2', 'value1']
+
+        df = self._createDataFrame(observations, columns)
+        with self.subTest():
+
+            list_df = lambda df: df.pd_df.values.tolist()
+
+            actual_df = df.groupby('agg1').min('value1')
+
+            self.assertListEqual(list_df(actual_df), [[-4], [0], [2], [4]])
+
+            actual_df = df.groupby('agg2').min('value1')
+
+            self.assertListEqual(list_df(actual_df), [[0], [1], [2], [-4]])
+
+            actual_df = df.groupby(['agg1', 'agg2']).min('value1')
+
+            self.assertListEqual(list_df(actual_df),
+                                 [[1], [1], [6], [-4],
+                                  [0], [4], [2], [4],
+                                  [2],
+                                  [4], [5]]
+                                 )
+            
+            actual_df = df.groupby().min('value1')
+
+            self.assertListEqual(list_df(actual_df), [[-4]])
+
 
     def test_max_function(self):
         self.assertFalse(True) #TODO: testar
