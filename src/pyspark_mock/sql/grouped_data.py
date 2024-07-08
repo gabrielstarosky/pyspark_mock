@@ -46,3 +46,16 @@ class GroupedData:
             copied_pd_df = self.pd_df.copy()
             copied_pd_df['dummy'] = 1
             return copied_pd_df.groupby(['dummy']).min(col)
+
+
+    @_mocked_dataframe
+    def max(self, col: str):
+
+        if self.cols is not None:
+            return self.pd_df.groupby(self.cols).max(col)
+        else:
+
+            copied_pd_df = self.pd_df.copy()
+            copied_pd_df['dummy'] = 1
+            return copied_pd_df.groupby(['dummy']).max(col)
+
