@@ -1,5 +1,6 @@
 import sys
 sys.path.append('src')
+from typing import List, Tuple
 import unittest
 
 import pandas as pd
@@ -103,7 +104,7 @@ class TestDataFrame(unittest.TestCase):
 
         self.assertListEqual(list(df.pd_df.result), [1, 2, 95, 16, 10])
 
-    def _createDataFrame(self, observations, columns):
+    def _createDataFrame(self, observations: List[Tuple[str]], columns: List[str]):
 
         pd_df = pd.DataFrame(observations, columns=columns)
 
@@ -124,7 +125,51 @@ class TestDataFrame(unittest.TestCase):
         self.assertFalse(True) #TODO: testar
 
     def test_count_function(self):
-        self.assertFalse(True) #TODO: testar
+        
+        observations = [
+            ('A', 'Cat1', 1000, 2000, 3000),
+            ('A', 'Cat1', 1000, 2000, 3000),
+            ('A', 'Cat2', 1000, 2000, 3000),
+            ('A', 'Cat3', 1000, 2000, 3000),
+            ('A', 'Cat4', 1000, 2000, 3000),
+            ('B', 'Cat1', 1000, 2000, 3000),
+            ('B', 'Cat2', 1000, 2000, 3000),
+            ('B', 'Cat3', 1000, 2000, 3000),
+            ('B', 'Cat4', 1000, 2000, 3000),
+            ('C', 'Cat2', 1000, 2000, 3000),
+            ('C', 'Cat2', 1000, 2000, 3000),
+            ('D', 'Cat3', 1000, 2000, 3000),
+            ('D', 'Cat3', 1000, 2000, 3000),
+            ('D', 'Cat4', 1000, 2000, 3000),
+            ('E', None, 1000, 2000, 3000),
+            ('E', None, 1000, 2000, 3000),
+            ('E', None, 1000, 2000, 3000),
+            ('E', None, 1000, 2000, 3000),
+            ('E', None, 1000, 2000, 3000),
+            ('E', None, 1000, 2000, 3000),
+        ]
+        columns = ['agg1', 'agg2', 'value1', 'value2', 'value3']
+
+        df = self._createDataFrame(observations, columns)
+        with self.subTest():
+
+            list_df = lambda df: df.pd_df.values.tolist()
+
+            actual_df = df.groupby('agg1').count()
+
+            self.assertListEqual(list_df(actual_df), [[5], [4], [2], [3], [6]])
+
+            actual_df = df.groupby('agg2').count()
+
+            self.assertListEqual(list_df(actual_df), [[3], [4], [4], [3]])
+
+            actual_df = df.groupby(['agg1', 'agg2']).count()
+
+            self.assertListEqual(list_df(actual_df), [[2], [1], [1], [1], [1], [1], [1], [1], [2], [2], [1]])
+
+            actual_df = df.groupby().count()
+
+            self.assertListEqual(list_df(actual_df), [20])
 
     def test_greatest_function(self):
         

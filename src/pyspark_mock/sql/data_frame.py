@@ -1,4 +1,7 @@
+from typing import List
 import pandas as pd
+
+
 
 class DataFrame:
 
@@ -14,3 +17,7 @@ class DataFrame:
     
     def withColumn(self, column_name, col):
         return col.alias(column_name).apply(self)
+
+    def groupby(self, cols: str | List[str] = None):
+        from pyspark_mock.sql import GroupedData
+        return GroupedData(cols, self)
