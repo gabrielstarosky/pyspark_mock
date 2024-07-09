@@ -1,6 +1,6 @@
 from .session import SparkSession
 from .data_frame import DataFrame
-from .column import Column
+from .column import Column, AggregatedColumn
 from . import functions
 from .grouped_data import GroupedData
 

@@ -1,6 +1,6 @@
 import math
 
-from pyspark_mock.sql import Column
+from pyspark_mock.sql import Column, AggregatedColumn
 from ._utils import _f_in_df
 
 def lit(literal_value):
@@ -31,3 +31,8 @@ def when(col, value_when_true):
     imp_f_in_df = _f_in_df(lambda pd_df : pd_df[col].apply(lambda x : value_when_true if x else None))
     return Column(f'WHEN({col})', imp_f_in_df)
 
+def min(col):
+    return AggregatedColumn(f'min({col})', col, 'min')
+
+def max(col):
+    return AggregatedColumn(f'max({col})', col, 'max')

@@ -56,3 +56,16 @@ class Column:
     def __ge__(self, other):
         imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] >= pd_df[other.column_name])
         return Column(f'{self.column_name} > {other.column_name}', imp_f_in_df)
+
+
+class AggregatedColumn:
+
+
+    def __init__(self, col_name: str, value: str, aggregation: str):
+        self.col_name = col_name
+        self.value = value
+        self.aggregation = aggregation
+
+
+    def alias(self, new_col_name):
+        return AggregatedColumn(new_col_name, self.value, self.aggregation)

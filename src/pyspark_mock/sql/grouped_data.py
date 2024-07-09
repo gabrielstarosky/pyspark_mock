@@ -3,6 +3,7 @@ from typing import List
 import pandas as pd
 
 from pyspark_mock.sql import DataFrame
+from pyspark_mock.sql.column import AggregatedColumn
 
 def _mocked_dataframe(f):
 
@@ -23,6 +24,13 @@ class GroupedData:
         else:
             self.cols = cols
 
+    @_mocked_dataframe
+    def agg(self, *aggregations: List[AggregatedColumn]) -> pd.DataFrame:
+        copied_pd_df = self.pd_df.copy()
+
+        return copied_pd_df.groupby(self.cols).agg(
+           **dict([(ag.col_name, (ag.value, ag.aggregation)) for ag in aggregations]) 
+        )
 
     @_mocked_dataframe
     def count(self) -> pd.DataFrame:
