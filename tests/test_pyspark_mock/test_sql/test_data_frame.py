@@ -1,4 +1,6 @@
 import sys
+
+
 sys.path.append('src')
 from typing import List, Tuple
 import unittest
@@ -7,6 +9,7 @@ import pandas as pd
 
 from pyspark_mock.sql import DataFrame as MockedDataFrame
 from pyspark_mock.sql import functions as F
+from pyspark_mock.sql.window import Window
 
 
 class TestDataFrame(unittest.TestCase):
@@ -505,3 +508,47 @@ class TestDataFrame(unittest.TestCase):
 
         list_df = lambda df: df.pd_df.values.tolist()
         self.assertListEqual(list_df(actual_df), [[3000 , 6000], [2000, 7000], [4000, 8000]])
+
+    def test_max_used_as_window_function_produce_expected_results(self):
+
+        observations = [
+            ('2008', 'Coca-cola', 5000),
+            ('2008', 'Pepsi', 4000),
+            ('2008', 'Antartica', 6000),
+            ('2008', 'Pureza', 3000),
+            ('2009', 'Coca-cola', 6000),
+            ('2009', 'Pepsi', 2000),
+            ('2009', 'Antartica', 5000),
+            ('2009', 'Pureza', 7000),
+            ('2010', 'Coca-cola', 8000),
+            ('2010', 'Pepsi', 4000),
+            ('2010', 'Antartica', 6000),
+            ('2010', 'Pureza', 4000),
+        ]
+        columns = ['year', 'company', 'earnings']
+
+        df = self._createDataFrame(observations, columns)
+
+        w = Window().partitionBy("company")
+        actual_df = df.withColumn("max_earnings", F.max("earnings").over(w))
+
+        self.assertListEqual(actual_df.columns, columns + ["max_earnings"])
+        
+        list_df = lambda df: df.pd_df.values.tolist()
+        self.assertListEqual(list_df(actual_df),
+                             [
+                                ['2008', 'Coca-cola', 5000, 8000],
+                                ['2008', 'Pepsi', 4000, 4000],
+                                ['2008', 'Antartica', 6000, 6000],
+                                ['2008', 'Pureza', 3000, 7000],
+                                ['2009', 'Coca-cola', 6000, 8000],
+                                ['2009', 'Pepsi', 2000, 4000],
+                                ['2009', 'Antartica', 5000, 6000],
+                                ['2009', 'Pureza', 7000, 7000],
+                                ['2010', 'Coca-cola', 8000, 8000],
+                                ['2010', 'Pepsi', 4000, 4000],
+                                ['2010', 'Antartica', 6000, 6000],
+                                ['2010', 'Pureza', 4000, 7000],
+                             ])
+
+

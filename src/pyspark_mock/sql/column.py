@@ -1,5 +1,6 @@
 
 
+from pyspark_mock.sql.window import Window
 from ._utils import _f_in_df
 
 class Column:
@@ -61,11 +62,16 @@ class Column:
 class AggregatedColumn:
 
 
-    def __init__(self, col_name: str, value: str, aggregation: str):
+    def __init__(self, col_name: str, value: str, aggregation: str, windowing_function):
         self.col_name = col_name
         self.value = value
         self.aggregation = aggregation
-
+        self.windowing_function = windowing_function
 
     def alias(self, new_col_name):
-        return AggregatedColumn(new_col_name, self.value, self.aggregation)
+        return AggregatedColumn(new_col_name, self.value, self.aggregation, self.windowing_function)
+
+    def over(self, window: Window):
+        imp_f_in_df = _f_in_df(lambda pd_df: self.windowing_function(pd_df, window._partitionBy, window._orderBy)) 
+        return Column(self.col_name, imp_f_in_df) 
+
