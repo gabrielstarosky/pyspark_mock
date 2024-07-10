@@ -207,7 +207,29 @@ class TestDataFrame(unittest.TestCase):
             self.assertListEqual(list_df(actual_df), [[6]])
 
     def test_max_by_function(self):
-        self.assertFalse(True) #TODO: testar
+        
+        observations = [
+            ('2008', 'Coca-cola', 5000),
+            ('2008', 'Pepsi', 4000),
+            ('2008', 'Antartica', 6000),
+            ('2008', 'Pureza', 3000),
+            ('2009', 'Coca-cola', 6000),
+            ('2009', 'Pepsi', 2000),
+            ('2009', 'Antartica', 5000),
+            ('2009', 'Pureza', 7000),
+            ('2010', 'Coca-cola', 8000),
+            ('2010', 'Pepsi', 4000),
+            ('2010', 'Antartica', 6000),
+            ('2010', 'Pureza', 4000),
+        ]
+        columns = ['year', 'company', 'earnings']
+
+        df = self._createDataFrame(observations, columns)
+
+        actual_df = df.groupby('year').agg(F.max_by('company', 'earnings'))
+
+        list_df = lambda df: df.pd_df.values.tolist()
+        self.assertListEqual(list_df(actual_df), [['Antartica'], ['Pureza'], ['Coca-cola']])
 
     def test_count_function(self):
         
