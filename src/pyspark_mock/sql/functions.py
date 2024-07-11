@@ -2,6 +2,7 @@ import math
 from typing import List
 
 from pyspark_mock.sql import Column, AggregatedColumn
+from pyspark_mock.sql.column import PureWindowColumn
 
 from ._utils import _f_in_df
 
@@ -59,3 +60,18 @@ def max(col):
         return pd_df_copy.groupby(partition_by)[col].transform(lambda x: x.max())
 
     return AggregatedColumn(f'max({col})', col, 'max', _windowing_function)
+
+def row_number():
+    
+    def _windowing_function(pd_df, partition_by: str | List[str]=None, order_by: str | List[str] = None):
+
+        pd_df_copy = pd_df.copy()
+        if partition_by is None:
+            pd_df_copy['dummy'] = 1
+            return pd_df_copy.groupby(partition_by)['dummy'].transform(lambda x: x.rank())
+
+        return pd_df_copy.groupby(partition_by)[order_by].transform(lambda x: x.rank())
+    
+
+    return PureWindowColumn(f'row_number()',  _windowing_function)
+

@@ -75,3 +75,15 @@ class AggregatedColumn:
         imp_f_in_df = _f_in_df(lambda pd_df: self.windowing_function(pd_df, window._partitionBy, window._orderBy)) 
         return Column(self.col_name, imp_f_in_df) 
 
+class PureWindowColumn:
+
+    def __init__(self, col_name, windowing_function):
+        self.col_name = col_name
+        self.windowing_function = windowing_function
+
+    def alias(self, new_col_name):
+        return PureWindowColumn(new_col_name, self.windowing_function)
+
+    def over(self, window: Window):
+        imp_f_in_df = _f_in_df(lambda pd_df: self.windowing_function(pd_df, window._partitionBy, window._orderBy)) 
+        return Column(self.col_name, imp_f_in_df) 

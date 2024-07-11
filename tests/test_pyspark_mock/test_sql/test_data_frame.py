@@ -551,4 +551,46 @@ class TestDataFrame(unittest.TestCase):
                                 ['2010', 'Pureza', 4000, 7000],
                              ])
 
+    def test_row_number_produce_expected_results(self):
+        
+        observations = [
+            ('2008', 'Coca-cola', 5000),
+            ('2008', 'Pepsi', 4000),
+            ('2008', 'Antartica', 6000),
+            ('2008', 'Pureza', 3000),
+            ('2009', 'Coca-cola', 6000),
+            ('2009', 'Pepsi', 2000),
+            ('2009', 'Antartica', 5000),
+            ('2009', 'Pureza', 7000),
+            ('2010', 'Coca-cola', 8000),
+            ('2010', 'Pepsi', 4000),
+            ('2010', 'Antartica', 6000),
+            ('2010', 'Pureza', 3000),
+        ]
+        columns = ['year', 'company', 'earnings']
 
+        df = self._createDataFrame(observations, columns)
+
+        w = Window().partitionBy("year").orderBy("earnings")
+        actual_df = df.withColumn("order_earnings", F.row_number().over(w))
+
+        self.assertListEqual(actual_df.columns, columns + ["order_earnings"])
+        
+        list_df = lambda df: df.pd_df.values.tolist()
+        self.assertListEqual(list_df(actual_df),
+                             [
+                                ['2008', 'Coca-cola', 5000, 3],
+                                ['2008', 'Pepsi', 4000, 2],
+                                ['2008', 'Antartica', 6000, 4],
+                                ['2008', 'Pureza', 3000, 1],
+                                ['2009', 'Coca-cola', 6000, 3],
+                                ['2009', 'Pepsi', 2000, 1],
+                                ['2009', 'Antartica', 5000, 2],
+                                ['2009', 'Pureza', 7000, 4],
+                                ['2010', 'Coca-cola', 8000, 4],
+                                ['2010', 'Pepsi', 4000, 2],
+                                ['2010', 'Antartica', 6000, 3],
+                                ['2010', 'Pureza', 3000, 1],
+                             ])
+
+        
