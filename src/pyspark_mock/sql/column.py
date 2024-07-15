@@ -5,9 +5,10 @@ from ._utils import _f_in_df
 
 class Column:
 
-    def __init__(self, column_name, rule_function):
+    def __init__(self, column_name, rule_function, ascending=True):
         self.column_name = column_name
         self.rule_function = rule_function
+        self.ascending = ascending
     
     def alias(self, new_column_name):
         return Column(new_column_name, self.rule_function)
@@ -15,8 +16,14 @@ class Column:
     def apply(self, df):
         return self.rule_function(df, self.column_name)
     
-    def str(self):
+    def __str__(self):
         return self.column_name
+
+    def asc(self):
+        return Column(self.column_name, self.rule_function, True)
+
+    def desc(self):
+        return Column(self.column_name, self.rule_function, False)
     
     def __add__(self, other):
         imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] + pd_df[other.column_name])
