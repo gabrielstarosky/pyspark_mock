@@ -593,4 +593,17 @@ class TestDataFrame(unittest.TestCase):
                                 ['2010', 'Pureza', 3000, 1],
                              ])
 
+    def test_column_are_calculated_before_applying_sqrt_function(self):
         
+        observations = [
+            (0, 1),
+            (1, 3),
+            (2, 7),
+            (4, 12),
+            (50, 50)
+        ]
+        columns = ['number1', 'number2']
+        df = self._createDataFrame(observations, columns)
+        df = df.withColumn('root', F.sqrt(F.col('number2') + F.col('number1')))
+
+        self.assertListEqual(list(df.pd_df.root), [1.0, 2.0, 3.0, 4.0, 10.0])        
