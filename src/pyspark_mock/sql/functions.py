@@ -1,6 +1,7 @@
 import math
 from typing import List
 
+import numpy as np
 from pyspark_mock.sql import Column 
 from pyspark_mock.sql.column import AggregatedColumn, PureWindowColumn
 from pyspark_mock.sql import DataFrame
@@ -9,31 +10,34 @@ from pyspark_mock.sql import DataFrame
 from ._utils import _f_in_df
 
 
-class PysparkMockFunction1:
+def convert_columns_to_pandas_columns(cols: List[str | Column], pd_df):
+    return [pd_df[col] if isinstance(col, str) else col.apply(DataFrame(pd_df)).pd_df[col.column_name] for col in cols]
+
+class PysparkMockFunctionWithColsAndParams:
 
     def __init__(self, label_lambda: callable, calculus: callable):
         self.label_lambda = label_lambda
         self.calculus = calculus
 
-    def __call__(self, column: str | Column):
-        return self._calculate_column_by_lambda(column)
+    def __call__(self, cols: List[str | Column], params: List[any]):
+        return self._calculate_column_by_lambda(cols, params)
 
-    def _calculate_column_by_lambda(self, column: str | Column): 
+    def _calculate_column_by_lambda(self, cols: List[str | Column], params: List[any]): 
 
-        calculation = lambda col : (lambda pd_df: pd_df[col].apply(self.calculus))
-        
-        if isinstance(column, str):
-            imp_f_in_df = _f_in_df(calculation(column))
-            return Column(self.label_lambda(column), imp_f_in_df)
+        calculation = lambda cols, params: (lambda pd_df: pd_df.apply(lambda x: self.calculus(*convert_columns_to_pandas_columns(cols, x), *params), axis=1))
 
-        final_column_name = self.label_lambda(column.column_name)
+        imp_f_in_df = _f_in_df(calculation(cols, params))
+        return Column(self.label_lambda(*cols, *params), imp_f_in_df)
 
-        def calculate_column_by_intermediate(pd_df):
-            pd_df['intermediate_column'] = column.alias('intermediate_column').apply(DataFrame(pd_df)).pd_df['intermediate_column']
-            pd_df[final_column_name] = calculation('intermediate_column')(pd_df)
-            return pd_df[final_column_name]
+class PysparkMockFunctionWithCols(PysparkMockFunctionWithColsAndParams):
 
-        return Column(final_column_name, _f_in_df(calculate_column_by_intermediate))
+    def __call__(self, *cols: List[str | Column]):
+        return self._calculate_column_by_lambda(cols, [])
+
+class PysparkMockFunctionWithParams(PysparkMockFunctionWithColsAndParams):
+
+    def __call__(self, *params: List[str | Column]):
+        return self._calculate_column_by_lambda([], params)
 
 def lit(literal_value):
     imp_f_in_df = _f_in_df(lambda pd_df : literal_value)
@@ -43,21 +47,31 @@ def col(column_name):
     imp_f_in_df = _f_in_df(lambda pd_df : pd_df[column_name])
     return Column(column_name, imp_f_in_df)
 
-sqrt = PysparkMockFunction1(lambda x: f'SQRT({x})', lambda x: math.sqrt(x))
-abs = PysparkMockFunction1(lambda x: f'ABS({x})', lambda x: x if x >= 0 else -x)
+lit = PysparkMockFunctionWithParams(lambda x: x, lambda x: x)
+col = PysparkMockFunctionWithCols(lambda x: x, lambda x: x)
+sqrt = PysparkMockFunctionWithCols(lambda x: f'SQRT({x})', lambda x: math.sqrt(x))
+abs = PysparkMockFunctionWithCols(lambda x: f'ABS({x})', lambda x: x if x >= 0 else -x)
 
-def greatest(*cols):
+def _max(*x):
 
-    imp_f_in_df = _f_in_df(lambda pd_df : pd_df[list(cols)].max(axis=1))
-   
-    str_list_of_cols = ','.join(cols)
-    return Column(f'GREATEST({str_list_of_cols})', imp_f_in_df)
+    x = [i for i in x if not np.isnan(i)] 
 
-def when(col, value_when_true):
+    value_max = x[0]
 
-    imp_f_in_df = _f_in_df(lambda pd_df : pd_df[col].apply(lambda x : value_when_true if x else None))
-    return Column(f'WHEN({col})', imp_f_in_df)
+    if len(x) == 1:
+        return value_max
+    else:
+        recursive_max = _max(*x[1:])
+        if value_max > recursive_max:
+            return value_max
+        else:
+            return recursive_max
 
+greatest = PysparkMockFunctionWithCols(lambda *x: f'GREATEST({",".join(x)})', lambda *x: _max(*x))
+
+when = PysparkMockFunctionWithCols(lambda x, y: f'WHEN({x})', lambda x, y: y if x else None)
+
+sin = PysparkMockFunctionWithCols(lambda x: f'SIN({x})', lambda x: math.sin(x))
 
 def min(col):
 

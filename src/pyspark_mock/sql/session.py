@@ -2,7 +2,6 @@ import pandas as pd
 
 from .data_frame import DataFrame
 
-__all__ = ['SparkSession']
 
 class SparkSession:
 

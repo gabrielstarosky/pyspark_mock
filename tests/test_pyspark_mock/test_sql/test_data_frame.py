@@ -1,10 +1,11 @@
 import sys
-
+import math
 
 sys.path.append('src')
 from typing import List, Tuple
 import unittest
 
+import numpy as np
 import pandas as pd
 
 from pyspark_mock.sql import DataFrame as MockedDataFrame
@@ -607,3 +608,17 @@ class TestDataFrame(unittest.TestCase):
         df = df.withColumn('root', F.sqrt(F.col('number2') + F.col('number1')))
 
         self.assertListEqual(list(df.pd_df.root), [1.0, 2.0, 3.0, 4.0, 10.0])        
+
+    def test_sine_function_is_calculated_correctly(self):
+
+        observations = [
+            (math.radians(90)),
+            (math.radians(30)),
+            (math.radians(270)),
+            (math.radians(180)),
+        ]
+        columns = ['angle']
+        df = self._createDataFrame(observations, columns)
+        df = df.withColumn('sine', F.sin('angle'))
+
+        np.testing.assert_almost_equal(df.pd_df.sine, [1.0, 0.5, -1.0, 0.0], decimal=5)
