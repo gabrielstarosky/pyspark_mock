@@ -1,0 +1,8 @@
+# .pre-commit-config.yaml
+repos:
+-   repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.4.1
+    hooks:
+    -   id: mypy
+        args: [--disallow-untyped-defs]
+        files: ^src/pyspark_mock/
