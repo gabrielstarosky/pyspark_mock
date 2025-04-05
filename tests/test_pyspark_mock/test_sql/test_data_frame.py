@@ -622,3 +622,87 @@ class TestDataFrame(unittest.TestCase):
         df = df.withColumn('sine', F.sin('angle'))
 
         np.testing.assert_almost_equal(df.pd_df.sine, [1.0, 0.5, -1.0, 0.0], decimal=5)
+
+    def test_sum_function(self):
+        observations = [
+            ('A', 'Cat1', 1),
+            ('A', 'Cat1', 4),
+            ('A', 'Cat2', 1),
+            ('A', 'Cat3', 6),
+            ('A', 'Cat4', -4),
+            ('B', 'Cat1', 0),
+            ('B', 'Cat2', 4),
+            ('B', 'Cat3', 2),
+            ('B', 'Cat4', 4),
+            ('C', 'Cat2', 5),
+            ('C', 'Cat2', 2),
+            ('D', 'Cat3', 4),
+            ('D', 'Cat3', 5),
+            ('D', 'Cat4', 5),
+        ]
+        columns = ['agg1', 'agg2', 'value1']
+
+        df = self._createDataFrame(observations, columns)
+        result = df.groupby('agg1').agg(F.sum('value1'))
+        self.assertListEqual(result.pd_df['sum(value1)'].tolist(), [8, 10, 7, 14])
+
+    def test_concat_function(self):
+        observations = [
+            ('Alice', 'A'),
+            ('Bob', 'B'),
+            ('Charlie', 'C'),
+        ]
+        columns = ['name', 'category']
+
+        df = self._createDataFrame(observations, columns)
+        result = df.withColumn('concat_col', F.concat(F.col('name'), F.lit('_'), F.col('category')))
+        self.assertListEqual(result.pd_df['concat_col'].tolist(), ['Alice_A', 'Bob_B', 'Charlie_C'])
+
+    # def test_rank_function(self):
+    #     observations = [
+    #         ('A', 1),
+    #         ('A', 4),
+    #         ('A', 1),
+    #         ('A', 6),
+    #         ('A', -4),
+    #         ('B', 0),
+    #         ('B', 4),
+    #         ('B', 2),
+    #         ('B', 4),
+    #         ('C', 5),
+    #         ('C', 2),
+    #         ('D', 4),
+    #         ('D', 5),
+    #         ('D', 5),
+    #     ]
+    #     columns = ['category', 'value']
+
+    #     df = self._createDataFrame(observations, columns)
+    #     window_spec = Window.partitionBy('category').orderBy('value')
+    #     result = df.withColumn('rank', F.rank().over(window_spec))
+    #     self.assertListEqual(result.pd_df['rank'].tolist(), [1, 2, 1, 3, 4, 1, 2, 1, 2, 1, 2, 1, 2, 2])
+
+    # def test_cast_function(self):
+    #     observations = [
+    #         (10),
+    #         (20),
+    #         (30),
+    #     ]
+    #     columns = ['value']
+
+    #     df = self._createDataFrame(observations, columns)
+    #     result = df.withColumn('value_as_string', F.col('value').cast('string'))
+    #     self.assertListEqual(result.pd_df['value_as_string'].tolist(), ['10', '20', '30'])
+
+    # def test_udf_function(self):
+    #     observations = [
+    #         (10),
+    #         (20),
+    #         (30),
+    #     ]
+    #     columns = ['value']
+
+    #     df = self._createDataFrame(observations, columns)
+    #     udf_double = self.spark.udf(lambda x: x * 2, 'integer')
+    #     result = df.withColumn('double_value', udf_double(F.col('value')))
+    #     self.assertListEqual(result.pd_df['double_value'].tolist(), [20, 40, 60])

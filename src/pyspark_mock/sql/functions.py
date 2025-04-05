@@ -18,6 +18,10 @@ sqrt = PysparkMockFunctionWithCols(lambda x: f'SQRT({x})', lambda x: math.sqrt(x
 abs = PysparkMockFunctionWithCols(lambda x: f'ABS({x})', lambda x: x if x >= 0 else -x)
 when = PysparkMockFunctionWithCols(lambda x, y: f'WHEN({x})', lambda x, y: y if x else None)
 sin = PysparkMockFunctionWithCols(lambda x: f'SIN({x})', lambda x: math.sin(x))
+concat = PysparkMockFunctionWithCols(
+    lambda *cols: f'CONCAT({",".join(str(c) for c in cols)})',
+    lambda *cols: ''.join(cols)
+)
 
 def _max(*x):
 
@@ -76,3 +80,11 @@ def row_number():
 
     return PureWindowColumn(f'row_number()',  _windowing_function)
 
+def sum(col):
+
+    def _windowing_function(pd_df, partition_by, order_by):
+        if partition_by:
+            return pd_df.groupby(partition_by)[col].transform('sum')
+        return pd_df[col].sum()
+
+    return AggregatedColumn(f'sum({col})', col, 'sum', _windowing_function)

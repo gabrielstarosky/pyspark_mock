@@ -3,7 +3,14 @@ from typing import List
 from pyspark_mock.sql import DataFrame, Column
 from ._utils import _f_in_df
 
+import pandas as pd
+
 def convert_columns_to_pandas_columns(cols: List[str | Column], pd_df):
+
+    if type(pd_df) == pd.Series:
+        t_pd_df =  pd_df.to_frame().T
+        return [t_pd_df[col].reset_index()[col][0] if isinstance(col, str)
+                else col.apply(DataFrame(t_pd_df)).pd_df[col.column_name].reset_index()[col.column_name][0] for col in cols]
     return [pd_df[col] if isinstance(col, str) else col.apply(DataFrame(pd_df)).pd_df[col.column_name] for col in cols]
 
 class PysparkMockFunctionWithColsAndParams:
