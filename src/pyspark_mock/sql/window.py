@@ -3,6 +3,17 @@
 
 class Window:
 
+    @staticmethod
+    def partitionBy(cols):
+        return WindowSpec().partitionBy(cols)
+
+    @staticmethod
+    def orderBy(self, cols):
+        return WindowSpec().orderBy(cols)
+
+
+class WindowSpec:
+
     def __init__(self):
         self._partitionBy = None
         self._orderBy = None

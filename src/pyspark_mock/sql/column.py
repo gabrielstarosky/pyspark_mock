@@ -1,7 +1,7 @@
 
 
 from pyspark_mock.sql.window import Window
-from ._utils import _f_in_df
+from ._utils import f_in_df
 
 class Column:
 
@@ -26,44 +26,44 @@ class Column:
         return Column(self.column_name, self.rule_function, False)
     
     def __add__(self, other):
-        imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] + pd_df[other.column_name])
-        return Column(f'{self.column_name} + {other.column_name}', imp_f_in_df)
+        impf_in_df = f_in_df(lambda pd_df : pd_df[self.column_name] + pd_df[other.column_name])
+        return Column(f'{self.column_name} + {other.column_name}', impf_in_df)
     
     def __sub__(self, other):
-        imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] - pd_df[other.column_name])
-        return Column(f'{self.column_name} - {other.column_name}', imp_f_in_df)
+        impf_in_df = f_in_df(lambda pd_df : pd_df[self.column_name] - pd_df[other.column_name])
+        return Column(f'{self.column_name} - {other.column_name}', impf_in_df)
     
     def __mul__(self, other):
-        imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] * pd_df[other.column_name])
-        return Column(f'{self.column_name} - {other.column_name}', imp_f_in_df)
+        impf_in_df = f_in_df(lambda pd_df : pd_df[self.column_name] * pd_df[other.column_name])
+        return Column(f'{self.column_name} - {other.column_name}', impf_in_df)
     
     def __truediv__(self, other):
-        imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] / pd_df[other.column_name])
-        return Column(f'{self.column_name} / {other.column_name}', imp_f_in_df)
+        impf_in_df = f_in_df(lambda pd_df : pd_df[self.column_name] / pd_df[other.column_name])
+        return Column(f'{self.column_name} / {other.column_name}', impf_in_df)
     
     def __lt__(self, other):
-        imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] < pd_df[other.column_name])
-        return Column(f'{self.column_name} < {other.column_name}', imp_f_in_df)
+        impf_in_df = f_in_df(lambda pd_df : pd_df[self.column_name] < pd_df[other.column_name])
+        return Column(f'{self.column_name} < {other.column_name}', impf_in_df)
     
     def __le__(self, other):
-        imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] <= pd_df[other.column_name])
-        return Column(f'{self.column_name} <= {other.column_name}', imp_f_in_df)
+        impf_in_df = f_in_df(lambda pd_df : pd_df[self.column_name] <= pd_df[other.column_name])
+        return Column(f'{self.column_name} <= {other.column_name}', impf_in_df)
     
     def __eq__(self, other):
-        imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] == pd_df[other.column_name])
-        return Column(f'{self.column_name} = {other.column_name}', imp_f_in_df)
+        impf_in_df = f_in_df(lambda pd_df : pd_df[self.column_name] == pd_df[other.column_name])
+        return Column(f'{self.column_name} = {other.column_name}', impf_in_df)
     
     def __ne__(self, other):
-        imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] != pd_df[other.column_name])
-        return Column(f'{self.column_name} != {other.column_name}', imp_f_in_df)
+        impf_in_df = f_in_df(lambda pd_df : pd_df[self.column_name] != pd_df[other.column_name])
+        return Column(f'{self.column_name} != {other.column_name}', impf_in_df)
 
     def __gt__(self, other):
-        imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] > pd_df[other.column_name])
-        return Column(f'{self.column_name} > {other.column_name}', imp_f_in_df)
+        impf_in_df = f_in_df(lambda pd_df : pd_df[self.column_name] > pd_df[other.column_name])
+        return Column(f'{self.column_name} > {other.column_name}', impf_in_df)
 
     def __ge__(self, other):
-        imp_f_in_df = _f_in_df(lambda pd_df : pd_df[self.column_name] >= pd_df[other.column_name])
-        return Column(f'{self.column_name} > {other.column_name}', imp_f_in_df)
+        impf_in_df = f_in_df(lambda pd_df : pd_df[self.column_name] >= pd_df[other.column_name])
+        return Column(f'{self.column_name} > {other.column_name}', impf_in_df)
 
 
 class AggregatedColumn:
@@ -79,8 +79,8 @@ class AggregatedColumn:
         return AggregatedColumn(new_col_name, self.value, self.aggregation, self.windowing_function)
 
     def over(self, window: Window):
-        imp_f_in_df = _f_in_df(lambda pd_df: self.windowing_function(pd_df, window._partitionBy, window._orderBy)) 
-        return Column(self.col_name, imp_f_in_df) 
+        impf_in_df = f_in_df(lambda pd_df: self.windowing_function(pd_df, window._partitionBy, window._orderBy)) 
+        return Column(self.col_name, impf_in_df) 
 
 class PureWindowColumn:
 
@@ -92,5 +92,5 @@ class PureWindowColumn:
         return PureWindowColumn(new_col_name, self.windowing_function)
 
     def over(self, window: Window):
-        imp_f_in_df = _f_in_df(lambda pd_df: self.windowing_function(pd_df, window._partitionBy, window._orderBy)) 
-        return Column(self.col_name, imp_f_in_df) 
+        impf_in_df = f_in_df(lambda pd_df: self.windowing_function(pd_df, window._partitionBy, window._orderBy)) 
+        return Column(self.col_name, impf_in_df) 

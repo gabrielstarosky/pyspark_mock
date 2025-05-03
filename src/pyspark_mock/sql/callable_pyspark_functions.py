@@ -1,7 +1,7 @@
 from typing import List
 
 from pyspark_mock.sql import DataFrame, Column
-from ._utils import _f_in_df
+from ._utils import f_in_df, PandasSeriesType, PandasDataFrameType
 
 import pandas as pd
 
@@ -26,8 +26,8 @@ class PysparkMockFunctionWithColsAndParams:
 
         calculation = lambda cols, params: (lambda pd_df: pd_df.apply(lambda x: self.calculus(*convert_columns_to_pandas_columns(cols, x), *params), axis=1))
 
-        imp_f_in_df = _f_in_df(calculation(cols, params))
-        return Column(self.label_lambda(*cols, *params), imp_f_in_df)
+        impf_in_df = f_in_df(calculation(cols, params))
+        return Column(self.label_lambda(*cols, *params), impf_in_df)
 
 class PysparkMockFunctionWithCols(PysparkMockFunctionWithColsAndParams):
 
